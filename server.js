@@ -10,6 +10,9 @@ require("./config/db");
 const port = process.env.PORT || 3000;
 
 app.use(cors());
+// Setup body parsers (query - body)
+app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
 
 app.use("/public", express.static(`${process.cwd()}/public`));
 
@@ -21,6 +24,8 @@ app.get("/", function (req, res) {
 app.get("/api/hello", function (req, res) {
   res.json({ greeting: "hello API" });
 });
+// /api/shorturl endpoint
+app.use("/api/shorturl", require("./routers/shorturlRouter"));
 
 module.exports = app.listen(port, function () {
   console.log(`Listening on port ${port}`);
