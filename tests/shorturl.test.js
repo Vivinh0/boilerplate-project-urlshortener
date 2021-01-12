@@ -16,7 +16,7 @@ describe("Test URL Shortener Microservice", () => {
   });
   afterEach((done) => server.close(() => done()));
   after(async () => {
-    await shorurlModel.remove();
+    await shorurlModel.deleteMany();
     await mongoose.disconnect();
   });
 
@@ -28,7 +28,7 @@ describe("Test URL Shortener Microservice", () => {
         .send({ url_input: "https://www.freecodecamp.org/" })
         .end((err, res) => {
           // console.log(res.body);
-          
+
           // Get results
           const actualOriginal_url = res.body.original_url;
           const actualShort_url = Number.parseInt(res.body.short_url);
@@ -39,6 +39,24 @@ describe("Test URL Shortener Microservice", () => {
           );
           expect(actualShort_url).to.be.equal(1);
 
+          done();
+        });
+    });
+  });
+
+  describe("GET /api/shorturl/1", () => {
+    it("should redirect to 'https://www.freecodecamp.org/'", (done) => {
+      chai
+        .request(server)
+        .get("/api/shorturl/1")
+        .end((err, res) => {
+          // console.log(res.redirects[0]);
+          // Get results
+          const actualResult = res.redirects[0];
+          const expectedResult = "https://www.freecodecamp.org/";
+
+          // Test results
+          expect(actualResult).to.be.equal(expectedResult);
           done();
         });
     });
