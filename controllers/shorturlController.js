@@ -1,8 +1,32 @@
 "use strict";
 
 const shorturlModel = require("../models/shorturlModel");
+const dns = require("dns");
 
 module.exports = {
+  validateUrl: (req, res, next) => {
+    const url_input = req.body.url;
+    const invalidUrlRes = () => res.json({ error: "Invalid URL" });
+
+    const validURL = RegExp(
+      "^(http://www.|https://www.|http://|https://)[a-z0-9]+([-.]{1}[a-z0-9]+)*.[a-z]{2,5}(:[0-9]{1,5})?(/.*)?$"
+    ).test(url_input);
+
+    if (validURL) {
+      // Check if hostname exists
+      const url = new URL(url_input);
+      dns.lookup(url.hostname, (err, address, family) => {
+        if (err) {
+          return invalidUrlRes();
+        } else {
+          next();
+        }
+      });
+    } else {
+      console.error("invalid URL");
+      return invalidUrlRes();
+    }
+  },
   newShorturl: async (req, res, next) => {
     try {
       // Set autoincrement int as short url
@@ -10,7 +34,7 @@ module.exports = {
 
       // Instantiate model to create
       const shorturlToCreate = new shorturlModel({
-        original_url: req.body.url_input,
+        original_url: req.body.url,
         short_url: counter,
       });
 
