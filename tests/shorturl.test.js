@@ -25,7 +25,7 @@ describe("Test URL Shortener Microservice", () => {
       chai
         .request(server)
         .post("/api/shorturl/new")
-        .send({ url_input: "https://www.freecodecamp.org/" })
+        .send({ url: "https://www.freecodecamp.org/learn/apis-and-microservices/apis-and-microservices-projects/url-shortener-microservice" })
         .end((err, res) => {
           // console.log(res.body);
 
@@ -35,7 +35,7 @@ describe("Test URL Shortener Microservice", () => {
 
           // Test results
           expect(actualOriginal_url).to.be.equal(
-            "https://www.freecodecamp.org/"
+            "https://www.freecodecamp.org/learn/apis-and-microservices/apis-and-microservices-projects/url-shortener-microservice"
           );
           expect(actualShort_url).to.be.equal(1);
 
@@ -45,7 +45,7 @@ describe("Test URL Shortener Microservice", () => {
   });
 
   describe("GET /api/shorturl/1", () => {
-    it("should redirect to 'https://www.freecodecamp.org/'", (done) => {
+    it("should redirect to 'https://www.freecodecamp.org/learn/apis-and-microservices/apis-and-microservices-projects/url-shortener-microservice'", (done) => {
       chai
         .request(server)
         .get("/api/shorturl/1")
@@ -53,10 +53,30 @@ describe("Test URL Shortener Microservice", () => {
           // console.log(res.redirects[0]);
           // Get results
           const actualResult = res.redirects[0];
-          const expectedResult = "https://www.freecodecamp.org/";
+          const expectedResult = "https://www.freecodecamp.org/learn/apis-and-microservices/apis-and-microservices-projects/url-shortener-microservice";
 
           // Test results
           expect(actualResult).to.be.equal(expectedResult);
+          done();
+        });
+    });
+  });
+
+  describe("POST /api/shorturl/new", () => {
+    it("should return a JSON response equals to { error: 'invalid url' } if the passed URL is invalid", (done) => {
+      chai
+        .request(server)
+        .post("/api/shorturl/new")
+        .send({ url: "ftp:/john-doe.org" })
+        .end((err, res) => {
+          // Get results
+          const actualResult = res.body;
+          console.log(res.body);
+          const expectedResult = { error: "Invalid URL" };
+
+          //Test results
+          expect(actualResult.error).to.be.equals(expectedResult.error);
+
           done();
         });
     });
