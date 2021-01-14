@@ -9,5 +9,5 @@ const shorturlController = require("../controllers/shorturlController");
 // });
 
 module.exports = router
-  .post("/new", shorturlController.newShorturl)
+  .post("/new", shorturlController.validateUrl, shorturlController.newShorturl)
   .get("/:shorturl", shorturlController.redirect);
